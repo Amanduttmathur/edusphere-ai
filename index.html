@@ -32,7 +32,7 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;background:var(--bg);padding:14p
 fieldset{border:0;margin:22px 0 0;padding:0;min-width:0}
 legend{font-weight:700;margin-bottom:10px}
 .choice{display:flex;align-items:baseline;gap:8px;padding:8px 0}
-textarea,input[type=text]{width:100%;font:inherit;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);margin:6px 0 10px}
+textarea,input[type=text],input[type=password]{width:100%;font:inherit;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);margin:6px 0 10px}
 progress{width:100%;accent-color:var(--accent)}
 .feedback{margin:8px 0 0;color:var(--accent)}
 .saved-list{display:grid;gap:10px}
@@ -46,7 +46,20 @@ progress{width:100%;accent-color:var(--accent)}
 <header><div><div class="brand"><span class="mark" aria-hidden="true">E</span> EduSphere AI</div><nav aria-label="Workspace"><button id="study-view" aria-pressed="true">Study</button><button id="saved-view" aria-pressed="false">Saved</button></nav></div></header>
 <main>
 <section class="intro"><h1>Build your data skills</h1><p class="muted">Learn Python, SQL, and machine learning one short lesson at a time.</p></section>
-<section id="study">
+<section id="account" class="panel" aria-labelledby="account-title" hidden>
+<h3 id="account-title">Study account</h3>
+<form id="account-form">
+<label for="username">Username</label>
+<input id="username" type="text" required minlength="3" maxlength="30" autocomplete="username">
+<label for="password">Password</label>
+<input id="password" type="password" required minlength="12" maxlength="128" autocomplete="current-password">
+<div class="actions"><button id="sign-in" type="submit">Sign in</button><button id="register" type="submit">Create account</button></div>
+</form>
+<button id="sign-out" hidden>Sign out</button>
+<button id="retry-sync" hidden>Retry sync</button>
+<p id="account-status" class="muted" role="status"></p>
+</section>
+<section id="study" style="margin-top:20px">
 <nav id="topics" aria-label="Topics"></nav>
 <div class="layout">
 <article class="panel" aria-labelledby="lesson-title">
@@ -58,8 +71,17 @@ progress{width:100%;accent-color:var(--accent)}
 <div class="actions" style="margin-top:20px"><button id="previous">Previous</button><button id="next" class="primary">Next lesson</button><button id="bookmark" aria-pressed="false">Save lesson</button></div>
 </article>
 <aside aria-label="Study tools">
-<section class="panel"><h3>Topic progress</h3><progress id="progress" aria-label="Topic progress"></progress><p id="progress-label" class="muted"></p><label for="note">Your notes</label><textarea id="note" rows="4" placeholder="Write a takeaway…"></textarea><small id="storage-status" role="status">Notes and progress are saved in this browser.</small></section>
+<section class="panel"><h3>Topic progress</h3><progress id="progress" aria-label="Topic progress"></progress><p id="progress-label" class="muted"></p><label for="note">Your notes</label><textarea id="note" rows="4" maxlength="4000" placeholder="Write a takeaway…"></textarea><small id="storage-status" role="status">Notes and progress are saved in this browser.</small></section>
 <section class="panel"><h3>Study help</h3><p class="muted">Review the current lesson’s explanation or example.</p><div class="actions"><button id="explain">Explain concept</button><button id="show-example">Walk through example</button></div><p id="help-answer" class="feedback" role="status"></p></section>
+<section id="chat-panel" class="panel" hidden>
+<h3>Ask the AI tutor</h3>
+<form id="chat-form">
+<label for="chat-question">Question about this lesson</label>
+<textarea id="chat-question" required maxlength="1000" rows="3"></textarea>
+<button id="ask" type="submit">Ask tutor</button>
+</form>
+<p id="chat-answer" class="feedback" role="status" style="white-space:pre-wrap"></p>
+</section>
 </aside>
 </div>
 </section>

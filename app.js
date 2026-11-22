@@ -76,7 +76,12 @@ const byId = id => document.getElementById(id);
 const storageKey = 'edusphere-ai-study-v1';
 const lessons = Object.values(topics).flat();
 const lessonIds = new Set(lessons.map(lesson => lesson.id));
-const state = {saved: new Set(), completed: new Set(), notes: Object.create(null)};
+const guestState = {saved: new Set(), completed: new Set(), notes: Object.create(null)};
+let state = guestState;
+let username = null;
+let chatEnabled = false;
+let updates = Promise.resolve();
+const pending = new Map();
 let activeTopic = 'Python';
 let index = 0;
 
@@ -92,7 +97,13 @@ try {
   byId('storage-status').textContent = 'Saved study data could not be loaded.';
 }
 
-function persist() {
+function persist(change) {
+  if (username) {
+    const lessonId = currentLesson().id;
+    pending.set(lessonId, {...pending.get(lessonId), ...change});
+    queueSync();
+    return;
+  }
   try {
     localStorage.setItem(storageKey, JSON.stringify({
       saved: [...state.saved], completed: [...state.completed], notes: state.notes
@@ -148,6 +159,7 @@ function renderLesson() {
   byId('question').textContent = lesson.question;
   byId('feedback').textContent = state.completed.has(lesson.id) ? 'Quiz completed.' : '';
   byId('help-answer').textContent = '';
+  byId('chat-answer').textContent = '';
   byId('note').value = state.notes[lesson.id] || '';
   byId('previous').disabled = index === 0;
   byId('next').disabled = index === topics[activeTopic].length - 1;
@@ -197,19 +209,19 @@ byId('quiz').addEventListener('submit', event => {
     return;
   }
   state.completed.add(lesson.id);
-  persist();
+  persist({completed: true});
   updateProgress();
   byId('feedback').textContent = `Correct. ${lesson.walkthrough}`;
 });
 byId('note').addEventListener('input', event => {
   state.notes[currentLesson().id] = event.target.value;
-  persist();
+  persist({note: event.target.value});
 });
 byId('bookmark').addEventListener('click', () => {
   const id = currentLesson().id;
   if (state.saved.has(id)) state.saved.delete(id);
   else state.saved.add(id);
-  persist();
+  persist({saved: state.saved.has(id)});
   updateBookmark();
 });
 byId('previous').addEventListener('click', () => openTopic(activeTopic, index - 1));
@@ -223,3 +235,123 @@ byId('show-example').addEventListener('click', () => {
   byId('help-answer').textContent = currentLesson().walkthrough;
 });
 renderLesson();
+
+async function request(route, method = 'GET', payload) {
+  const response = await fetch(route, {
+    method,
+    headers: payload === undefined ? {} : {'Content-Type': 'application/json'},
+    body: payload === undefined ? undefined : JSON.stringify(payload)
+  });
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.error || 'Request failed.');
+  return result;
+}
+
+function queueSync() {
+  const owner = username;
+  updates = updates.then(async () => {
+    if (owner !== username || !pending.size) return;
+    byId('storage-status').textContent = 'Syncing study changes…';
+    try {
+      for (const [lessonId, change] of pending) {
+        await request('/api/study', 'PATCH', {lessonId, ...change});
+        if (pending.get(lessonId) === change) pending.delete(lessonId);
+      }
+      byId('retry-sync').hidden = true;
+      byId('storage-status').textContent = pending.size ? 'Syncing study changes…' : 'Study changes synced.';
+    } catch (error) {
+      byId('retry-sync').hidden = false;
+      byId('storage-status').textContent = `Changes could not sync. ${error.message}`;
+    }
+  });
+}
+
+async function refreshAccount() {
+  const session = await request('/api/session');
+  const nextState = session.username
+    ? {saved: new Set(), completed: new Set(), notes: Object.create(null)}
+    : guestState;
+  if (session.username) {
+    const {lessons: storedLessons} = await request('/api/study');
+    for (const lesson of storedLessons) {
+      if (lesson.saved) nextState.saved.add(lesson.lesson_id);
+      if (lesson.completed) nextState.completed.add(lesson.lesson_id);
+      nextState.notes[lesson.lesson_id] = lesson.note;
+    }
+  }
+  username = session.username;
+  chatEnabled = session.chatEnabled;
+  state = nextState;
+  byId('account').hidden = false;
+  byId('account-form').hidden = Boolean(username);
+  byId('sign-out').hidden = !username;
+  byId('retry-sync').hidden = true;
+  byId('chat-panel').hidden = !username || !chatEnabled;
+  byId('account-status').textContent = username
+    ? `Signed in as ${username}.${chatEnabled ? '' : ' AI chat requires server configuration.'}`
+    : 'Sign in to sync study activity across devices. Guest progress stays in this browser.';
+  byId('storage-status').textContent = username ? 'Study changes sync to your account.' :
+    'Notes and progress are saved in this browser.';
+  renderLesson();
+  if (!byId('saved').hidden) renderSaved();
+}
+
+byId('retry-sync').addEventListener('click', queueSync);
+byId('account-form').addEventListener('submit', async event => {
+  event.preventDefault();
+  const buttons = [byId('sign-in'), byId('register')];
+  buttons.forEach(button => { button.disabled = true; });
+  const route = event.submitter?.id === 'register' ? '/api/register' : '/api/login';
+  try {
+    await request(route, 'POST', {
+      username: byId('username').value,
+      password: byId('password').value
+    });
+    byId('account-form').reset();
+    await refreshAccount();
+  } catch (error) {
+    byId('account-status').textContent = error.message;
+  } finally {
+    buttons.forEach(button => { button.disabled = false; });
+  }
+});
+byId('sign-out').addEventListener('click', async event => {
+  const button = event.currentTarget;
+  button.disabled = true;
+  byId("study").inert = true;
+  try {
+    queueSync();
+    await updates;
+    if (pending.size) throw new Error('Retry syncing your study changes before signing out.');
+    await request('/api/logout', 'POST', {});
+    await refreshAccount();
+  } catch (error) {
+    byId('account-status').textContent = error.message;
+  } finally {
+    button.disabled = false;
+    byId("study").inert = false;
+  }
+});
+byId('chat-form').addEventListener('submit', async event => {
+  event.preventDefault();
+  const lesson = currentLesson();
+  const owner = username;
+  const question = byId('chat-question').value.trim();
+  if (!question) return;
+  byId('ask').disabled = true;
+  byId('chat-answer').textContent = 'Waiting for the tutor…';
+  try {
+    const response = await request('/api/chat', 'POST', {
+      question, lesson: `${lesson.title}\n${lesson.body}\n${lesson.example}`
+    });
+    if (currentLesson() === lesson && username === owner) byId('chat-answer').textContent = response.answer;
+  } catch (error) {
+    if (currentLesson() === lesson && username === owner) byId('chat-answer').textContent = error.message;
+  } finally {
+    byId('ask').disabled = false;
+  }
+});
+
+if (location.protocol === 'http:' || location.protocol === 'https:') {
+  refreshAccount().catch(() => { /* Static hosting keeps guest study mode available. */ });
+}

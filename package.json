@@ -1,0 +1,9 @@
+{
+  "name": "edusphere-ai",
+  "version": "1.1.0",
+  "private": true,
+  "description": "Interactive study workspace for Python, SQL, and machine learning",
+  "maintainers": [{"name": "Aman Dutt Mathur", "url": "https://github.com/Amanduttmathur"}],
+  "scripts": {"start": "node server.js"},
+  "engines": {"node": ">=24"}
+}
