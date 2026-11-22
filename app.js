@@ -69,6 +69,166 @@ const topics = {
       walkthrough: 'The model performs much better on examples it trained on. Compare simpler models on the same validation split to see whether they generalize better.',
       question: 'Which pattern is consistent with overfitting?', choices: ['Very high training accuracy and much lower validation accuracy', 'Identical accuracy on both sets', 'Higher validation accuracy alone'], answer: 0
     }
+  ],
+  "Statistics": [
+    {
+      id: 'stats-center',
+      title: "Mean and median",
+      body: "The mean is the sum divided by the count. The median is the middle of the sorted data, or the average of the two middle values.",
+      example: "2, 3, 4, 5, 26 → mean 8, median 4",
+      walkthrough: "The unusually large value raises the mean.",
+      question: "Which summary is less sensitive to outliers?",
+      choices: ["Mean","Median","Both equally"],
+      answer: 1
+    },
+    {
+      id: 'stats-range',
+      title: "Measure the range",
+      body: "Subtract the minimum from the maximum to measure the gap between the extremes.",
+      example: "5, 8, 12, 14 → 14 − 5 = 9",
+      walkthrough: "Only the smallest and largest values contribute.",
+      question: "What is the range of 4, 6, 11?",
+      choices: ["7","6","15"],
+      answer: 0
+    },
+    {
+      id: 'stats-correlation',
+      title: "Interpret correlation",
+      body: "Pearson correlation describes the direction and strength of a linear association.",
+      example: "Hours studied and test scores: r = 0.72",
+      walkthrough: "The association is positive. The coefficient alone cannot establish causation.",
+      question: "What does r = −0.8 indicate?",
+      choices: ["Positive linear association","No linear association","Negative linear association"],
+      answer: 2
+    }
+  ],
+  "Pandas": [
+    {
+      id: 'pandas-filter',
+      title: "Filter rows",
+      body: "A boolean mask selects the rows where a condition is true.",
+      example: "df.loc[df['score'] >= 80, ['name', 'score']]",
+      walkthrough: "The mask keeps scores of 80 or higher and returns two columns.",
+      question: "Which score is included?",
+      choices: ["79","80","60"],
+      answer: 1
+    },
+    {
+      id: 'pandas-missing',
+      title: "Count missing values",
+      body: "Use isna() to find missing values before deciding how to handle them.",
+      example: "df['score'].isna().sum()",
+      walkthrough: "The sum counts rows where isna() returned True.",
+      question: "How many missing values are in [10, None, 20, None]?",
+      choices: ["0","4","2"],
+      answer: 2
+    },
+    {
+      id: 'pandas-groups',
+      title: "Summarize groups",
+      body: "Use groupby() to split rows by a shared value and summarize the groups.",
+      example: "df.groupby('region')['sales'].sum()",
+      walkthrough: "Each region gets its own total.",
+      question: "Which method gives average sales per region?",
+      choices: ["mean()","sum()","size()"],
+      answer: 0
+    }
+  ],
+  "NumPy": [
+    {
+      id: 'numpy-arrays',
+      title: "Multiply array elements",
+      body: "NumPy applies multiplication by a scalar to each array element.",
+      example: "np.array([2, 4, 6]) * 3\n# [ 6 12 18]",
+      walkthrough: "The second value is 4 multiplied by 3.",
+      question: "What is the second output value?",
+      choices: ["6","8","12"],
+      answer: 2
+    },
+    {
+      id: 'numpy-shapes',
+      title: "Read array shapes",
+      body: "A two-dimensional array reports the number of rows and columns in that order.",
+      example: "np.array([[1, 2, 3], [4, 5, 6]]).shape\n# (2, 3)",
+      walkthrough: "There are two rows with three values each.",
+      question: "How many columns are in shape (4, 2)?",
+      choices: ["4","2","8"],
+      answer: 1
+    },
+    {
+      id: 'numpy-axes',
+      title: "Sum across an axis",
+      body: "Summing along axis 0 returns column totals. Summing along axis 1 returns row totals.",
+      example: "a = np.array([[1, 2], [3, 4]])\na.sum(axis=0)  # [4 6]",
+      walkthrough: "The first column adds 1 and 3.",
+      question: "What does a.sum(axis=1) return?",
+      choices: ["[3, 7]","[4, 6]","[10]"],
+      answer: 0
+    }
+  ],
+  "Data Visualization": [
+    {
+      id: 'viz-bars',
+      title: "Compare categories",
+      body: "Bar charts show how values vary across categories. Start the numeric axis at zero to preserve proportional bar lengths.",
+      example: "Orders by channel: Website 120, Store 80, Phone 40",
+      walkthrough: "The website bar is three times the length of the phone bar.",
+      question: "Which chart best compares order counts across channels?",
+      choices: ["Scatter plot","Bar chart","Line chart"],
+      answer: 1
+    },
+    {
+      id: 'viz-lines',
+      title: "Show a time trend",
+      body: "A line chart connects observations in time order.",
+      example: "January: 80\nFebruary: 100\nMarch: 92",
+      walkthrough: "Orders rose into February and then declined.",
+      question: "Which month had the highest order count?",
+      choices: ["January","March","February"],
+      answer: 2
+    },
+    {
+      id: 'viz-scatter',
+      title: "Compare numeric variables",
+      body: "A scatter plot gives each observation two numeric coordinates.",
+      example: "One point per order: x = item count, y = order value",
+      walkthrough: "Each point pairs the item count with the value for that order.",
+      question: "Which chart shows the relationship between these two variables?",
+      choices: ["Scatter plot","Pie chart","Single-series bar chart"],
+      answer: 0
+    }
+  ],
+  "Model Evaluation": [
+    {
+      id: 'eval-errors',
+      title: "Read classification errors",
+      body: "A false negative occurs when the actual class is positive and the predicted class is negative.",
+      example: "Actual: fraud\nPrediction: legitimate",
+      walkthrough: "The model missed fraud, the positive class.",
+      question: "What is a legitimate order incorrectly flagged as fraud?",
+      choices: ["False positive","True positive","False negative"],
+      answer: 0
+    },
+    {
+      id: 'eval-baseline',
+      title: "Compare with a baseline",
+      body: "A baseline provides a simple benchmark. One baseline predicts the majority class for every example.",
+      example: "95 legitimate orders and 5 fraud cases\nPredict legitimate every time → 95% accuracy",
+      walkthrough: "The model has high accuracy and detects zero fraud cases.",
+      question: "What measures the fraction of fraud cases detected?",
+      choices: ["Accuracy","Fraud precision","Fraud recall"],
+      answer: 2
+    },
+    {
+      id: 'eval-folds',
+      title: "Use cross-validation",
+      body: "Cross-validation rotates the portion of the development dataset used for validation.",
+      example: "Five folds: train on four and validate on one per round.",
+      walkthrough: "Every fold serves as validation once. A separate test set can evaluate the final model.",
+      question: "How many validation rounds are in five-fold cross-validation?",
+      choices: ["4","5","10"],
+      answer: 1
+    }
   ]
 };
 

@@ -1,6 +1,6 @@
 # EduSphere AI
 
-EduSphere AI is a study workspace for Python, SQL, and machine learning. It includes nine original lessons, worked examples, interactive quizzes, bookmarks, notes, and topic progress. Study help provides explanations and walkthroughs for each lesson.
+EduSphere AI is a study workspace covering Python, SQL, Machine Learning, Statistics, Pandas, NumPy, Data Visualization, and Model Evaluation. It includes 24 original lessons, worked examples, interactive quizzes, bookmarks, notes, and topic progress. Study help provides explanations and walkthroughs for each lesson.
 
 **Maintainer** Aman Dutt Mathur ([@Amanduttmathur](https://github.com/Amanduttmathur))
 
