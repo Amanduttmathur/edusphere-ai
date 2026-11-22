@@ -33,7 +33,8 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;background:var(--bg);padding:14p
 fieldset{border:0;margin:22px 0 0;padding:0;min-width:0}
 legend{font-weight:700;margin-bottom:10px}
 .choice{display:flex;align-items:baseline;gap:8px;padding:8px 0}
-textarea,input[type=text],input[type=password]{width:100%;font:inherit;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);margin:6px 0 10px}
+.topic-search{margin-bottom:12px}.topic-search label{display:block;font-weight:700}.topic-search form{display:flex;gap:8px;align-items:center}.topic-search input{flex:1;min-width:0}.topic-search p{margin-bottom:0}
+textarea,input[type=search],input[type=text],input[type=password]{width:100%;font:inherit;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);margin:6px 0 10px}
 progress{width:100%;accent-color:var(--accent)}
 .feedback{margin:8px 0 0;color:var(--accent)}
 .saved-list{display:grid;gap:10px}
@@ -61,6 +62,14 @@ progress{width:100%;accent-color:var(--accent)}
 <p id="account-status" class="muted" role="status"></p>
 </section>
 <section id="study" style="margin-top:20px">
+<section class="topic-search" aria-label="Find a topic">
+<label for="topic-filter">Find a topic</label>
+<form id="topic-search" role="search">
+<input id="topic-filter" type="search" placeholder="Search topics or lesson titles" autocomplete="off" aria-controls="topics">
+<button id="clear-topic-filter" type="button" hidden>Clear</button>
+</form>
+<p id="topic-filter-status" class="muted" role="status"></p>
+</section>
 <nav id="topics" aria-label="Topics"></nav>
 <div class="layout">
 <article class="panel" aria-labelledby="lesson-title">

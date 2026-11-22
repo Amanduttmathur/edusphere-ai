@@ -353,12 +353,46 @@ function renderSaved() {
   }
 }
 
-for (const topic of Object.keys(topics)) {
+const topicFilter = byId('topic-filter');
+const topicButtons = Object.entries(topics).map(([topic, group]) => {
   const button = document.createElement('button');
   button.textContent = topic;
-  button.addEventListener('click', () => openTopic(topic));
+  button.addEventListener('click', () => {
+    if (topic !== activeTopic) openTopic(topic);
+  });
   byId('topics').append(button);
+  const searchable = [topic, ...group.map(lesson => lesson.title)].join(' ').toLowerCase();
+  return {button, searchable};
+});
+
+function filterTopics() {
+  const words = topicFilter.value.toLowerCase().trim().split(/\s+/).filter(Boolean);
+  let count = 0;
+  for (const {button, searchable} of topicButtons) {
+    button.hidden = !words.every(word => searchable.includes(word));
+    if (!button.hidden) count += 1;
+  }
+  byId('clear-topic-filter').hidden = !topicFilter.value;
+  byId('topic-filter-status').textContent = !words.length ? '' : count
+    ? `${count} matching ${count === 1 ? 'topic' : 'topics'}`
+    : 'No matching topics. Try a different term or clear the search.';
 }
+
+topicFilter.addEventListener('input', filterTopics);
+byId('topic-search').addEventListener('submit', event => {
+  event.preventDefault();
+  const matches = topicButtons.filter(({button}) => !button.hidden);
+  if (matches.length === 1) {
+    matches[0].button.click();
+    matches[0].button.focus();
+  }
+});
+byId('clear-topic-filter').addEventListener('click', () => {
+  topicFilter.value = '';
+  filterTopics();
+  topicFilter.focus();
+});
+filterTopics();
 
 byId('quiz').addEventListener('submit', event => {
   event.preventDefault();
