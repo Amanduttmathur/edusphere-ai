@@ -14,6 +14,10 @@ Create an account to sync bookmarks, notes, and quiz progress across browsers. G
 
 Use **Find a topic** in the Study tab to filter the catalog by topic name or lesson title. Select a matching topic to study it.
 
+## Learn any topic
+
+Open **My Topics** and sign in to generate a three-lesson beginner path with examples and quizzes. Generated paths are saved to your account. Generation uses the configured OpenAI model and requires Structured Outputs support. The topic name is sent to OpenAI. Saved paths can be reopened without generating them again.
+
 ## SQL Lab
 
 Open **SQL Lab** from the study page to query a sample store dataset. The mini-project covers best-selling products, monthly revenue, and repeat customers. Queries run against an isolated, read-only SQLite dataset and require the Node server. The lab is available to guests and requires no AI key.
