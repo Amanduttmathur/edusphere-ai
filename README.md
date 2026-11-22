@@ -6,9 +6,13 @@ EduSphere AI is a study workspace for Python, SQL, and machine learning. It incl
 
 ## Run locally
 
-Install Node.js 24 or later and run `npm start` from the repository root. Open [localhost:8000](http://localhost:8000). The app creates a SQLite database on first run and requires no npm dependencies.
+Install Node.js 24.10 or later and run `npm start` from the repository root. Open [localhost:8000](http://localhost:8000). The app creates a SQLite database on first run and requires no npm dependencies.
 
 Create an account to sync bookmarks, notes, and quiz progress across browsers. Guest and account progress are stored separately. When multiple browsers edit the same note, the last successful save takes precedence.
+
+## SQL Lab
+
+Open **SQL Lab** from the study page to query a sample store dataset. The mini-project covers best-selling products, monthly revenue, and repeat customers. Queries run against an isolated, read-only SQLite dataset and require the Node server. The lab is available to guests and requires no AI key.
 
 ## Configure AI tutoring
 

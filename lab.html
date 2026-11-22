@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SQL Lab | EduSphere AI</title>
+<style>
+:root{color-scheme:dark;--bg:#101416;--panel:#191f20;--line:#323c3b;--text:#eef4ed;--muted:#afbfba;--accent:#cefa89;--ink:#192512}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,sans-serif}
+header{border-bottom:1px solid var(--line)}
+header>div,main{max-width:1100px;margin:auto;padding:20px clamp(16px,4vw,40px)}
+header>div{display:flex;justify-content:space-between;gap:12px;align-items:center}
+.brand{display:flex;align-items:center;gap:10px;font-weight:750;letter-spacing:-.03em}
+.mark{display:grid;place-items:center;width:34px;height:34px;background:var(--accent);color:var(--ink);border-radius:10px}
+nav,.actions{display:flex;gap:8px;flex-wrap:wrap}
+nav a{color:var(--accent);padding:8px 14px}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);border-radius:9px;padding:8px 14px;background:var(--panel);color:var(--text)}
+button:hover,button[aria-pressed=true]{border-color:var(--accent)}
+button:focus-visible,a:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.primary{background:var(--accent);color:var(--ink);font-weight:700;border-color:var(--accent)}
+h1,h2,h3,p{margin-top:0}
+h1{font-size:clamp(2rem,6vw,4rem);letter-spacing:-.07em;line-height:1.06;margin-bottom:12px}
+h2{font-size:clamp(1.6rem,4vw,2.6rem);letter-spacing:-.04em;line-height:1.15}
+h3{margin-bottom:8px}
+.intro{padding:32px 0 16px}
+.muted,small{color:var(--muted)}
+.layout{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:18px;margin-top:20px}
+.panel{padding:clamp(16px,3vw,28px);border:1px solid var(--line);border-radius:18px;background:var(--panel);min-width:0}
+aside .panel+ .panel{margin-top:18px}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;background:var(--bg);padding:14px;border-radius:8px;color:var(--accent)}
+fieldset{border:0;margin:22px 0 0;padding:0;min-width:0}
+legend{font-weight:700;margin-bottom:10px}
+.choice{display:flex;align-items:baseline;gap:8px;padding:8px 0}
+textarea,input[type=text],input[type=password]{width:100%;font:inherit;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);margin:6px 0 10px}
+progress{width:100%;accent-color:var(--accent)}
+.feedback{margin:8px 0 0;color:var(--accent)}
+.saved-list{display:grid;gap:10px}
+.saved-list button{text-align:left}
+[hidden]{display:none}
+@media(max-width:700px){.layout{grid-template-columns:1fr}header>div{flex-wrap:wrap}}
+
+select{font:inherit;color:var(--text);background:var(--bg);padding:8px;border:1px solid var(--line);border-radius:8px;width:100%}
+table{border-collapse:collapse;width:100%}
+td,th{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line)}
+.table-wrap{overflow:auto}
+#sql{font-family:monospace}
+</style>
+<script src="lab.js" defer></script>
+</head>
+<body>
+<header><div><div class="brand"><span class="mark" aria-hidden="true">E</span> EduSphere AI</div><nav aria-label="Workspace"><a href="./index.html">Study</a><a href="./lab.html" aria-current="page">SQL Lab</a></nav></div></header>
+<main>
+<section class="intro"><h1>SQL Lab</h1><p class="muted">Analyze three months of sample orders for an online store.</p></section>
+<div class="layout">
+<section class="panel" aria-labelledby="exercise-title">
+<h2 id="exercise-title">Online store mini-project</h2>
+<label for="task">Exercise</label>
+<select id="task"><option>Top-selling products</option><option>Monthly revenue</option><option>Repeat customers</option></select>
+<p id="prompt" style="margin-top:12px"></p>
+<form id="query-form">
+<label for="sql">SQL query</label>
+<textarea id="sql" rows="7" maxlength="3000" required spellcheck="false">SELECT * FROM orders LIMIT 5;</textarea>
+<div class="actions"><button id="run" class="primary" type="submit">Run query</button><button id="hint" type="button" aria-expanded="false" aria-controls="hint-text">Show hint</button></div>
+</form>
+<p id="hint-text" class="muted" hidden></p>
+<p id="status" role="status" class="feedback"></p>
+<div id="results" class="table-wrap"></div>
+</section>
+<aside class="panel" aria-labelledby="schema">
+<h3 id="schema">Dataset schema</h3>
+<p>The <code>orders</code> table has one row per product line. An order ID can appear on multiple rows.</p>
+<dl>
+<dt><code>order_id</code></dt><dd>Order number</dd>
+<dt><code>order_date</code></dt><dd>Date in YYYY-MM-DD format</dd>
+<dt><code>customer</code></dt><dd>Customer name</dd>
+<dt><code>product</code></dt><dd>Product name</dd>
+<dt><code>quantity</code></dt><dd>Units purchased</dd>
+<dt><code>unit_price_cents</code></dt><dd>Price per unit in cents</dd>
+</dl>
+<p class="muted">The lab uses SQLite. Results are graded by row values, column order, and row order.</p>
+</aside>
+</div>
+</main>
+</body>
+</html>

@@ -5,5 +5,5 @@
   "description": "Interactive study workspace for Python, SQL, and machine learning",
   "maintainers": [{"name": "Aman Dutt Mathur", "url": "https://github.com/Amanduttmathur"}],
   "scripts": {"start": "node server.js"},
-  "engines": {"node": ">=24"}
+  "engines": {"node": ">=24.10.0"}
 }

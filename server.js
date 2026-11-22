@@ -6,6 +6,7 @@ const { randomBytes, createHash, scrypt, timingSafeEqual } = require('node:crypt
 const { promisify } = require('node:util');
 const { DatabaseSync } = require('node:sqlite');
 const path = require('node:path');
+const { Worker } = require('node:worker_threads');
 
 const deriveKey = promisify(scrypt);
 const db = new DatabaseSync(process.env.DATABASE_PATH || path.join(__dirname, 'edusphere.sqlite'));
@@ -41,7 +42,9 @@ db.exec(`
 const staticFiles = new Map([
   ['/', ['index.html', 'text/html']],
   ['/index.html', ['index.html', 'text/html']],
-  ['/app.js', ['app.js', 'text/javascript']]
+  ['/app.js', ['app.js', 'text/javascript']],
+  ['/lab.html', ['lab.html', 'text/html']],
+  ['/lab.js', ['lab.js', 'text/javascript']]
 ].map(([url, [filename, type]]) => [url, {
   type, content: readFileSync(path.join(__dirname, filename))
 }]));
@@ -200,8 +203,43 @@ async function chat(req, accountId) {
   }
 }
 
+let activeLabQueries = 0;
+
+async function evaluateSql(req) {
+  const {sql, task} = await readJson(req);
+  if (typeof sql !== 'string' || !/^\s*(SELECT|WITH)\b/i.test(sql) || sql.length > 3000 ||
+      !Number.isInteger(task) || task < 0 || task > 2) {
+    fail(400, 'Enter a SELECT or WITH query of up to 3,000 characters.');
+  }
+  limit(`sql:${req.socket.remoteAddress}`, 60, 60_000);
+  if (activeLabQueries >= 4) fail(503, 'The SQL lab is busy. Try again in a moment.');
+  const worker = new Worker(path.join(__dirname, 'lab-worker.js'), {
+    workerData: {sql, task}, resourceLimits: {maxOldGenerationSizeMb: 32}
+  });
+  activeLabQueries += 1;
+  let timeout;
+  try {
+    const result = await new Promise((resolve, reject) => {
+      timeout = setTimeout(() => reject(new Error('Query timed out. Simplify it and try again.')), 1500);
+      worker.once('message', resolve);
+      worker.once('error', () => reject(new Error('The query could not be evaluated.')));
+      worker.once('exit', () => reject(new Error('The query could not be evaluated.')));
+    });
+    if (result.error) fail(400, result.error);
+    return result;
+  } catch (error) {
+    if (error.status) throw error;
+    fail(400, error.message);
+  } finally {
+    clearTimeout(timeout);
+    // Keep the slot occupied until SQLite finishes any native work.
+    void worker.terminate().finally(() => { activeLabQueries -= 1; });
+  }
+}
+
 async function api(req, res, route) {
   const name = `${req.method} ${route}`;
+  if (name === 'POST /api/lab/query') return evaluateSql(req);
   if (name === 'POST /api/register') return authenticate(req, res, true);
   if (name === 'POST /api/login') return authenticate(req, res, false);
   if (name === 'POST /api/logout') {

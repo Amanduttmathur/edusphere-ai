@@ -15,6 +15,7 @@ header>div{display:flex;justify-content:space-between;gap:12px;align-items:cente
 .brand{display:flex;align-items:center;gap:10px;font-weight:750;letter-spacing:-.03em}
 .mark{display:grid;place-items:center;width:34px;height:34px;background:var(--accent);color:var(--ink);border-radius:10px}
 nav,.actions{display:flex;gap:8px;flex-wrap:wrap}
+nav a{color:var(--accent);padding:8px 14px}
 button{font:inherit;cursor:pointer;border:1px solid var(--line);border-radius:9px;padding:8px 14px;background:var(--panel);color:var(--text)}
 button:hover,button[aria-pressed=true]{border-color:var(--accent)}
 button:focus-visible,a:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
@@ -43,7 +44,7 @@ progress{width:100%;accent-color:var(--accent)}
 <script src="app.js" defer></script>
 </head>
 <body>
-<header><div><div class="brand"><span class="mark" aria-hidden="true">E</span> EduSphere AI</div><nav aria-label="Workspace"><button id="study-view" aria-pressed="true">Study</button><button id="saved-view" aria-pressed="false">Saved</button></nav></div></header>
+<header><div><div class="brand"><span class="mark" aria-hidden="true">E</span> EduSphere AI</div><nav aria-label="Workspace"><button id="study-view" aria-pressed="true">Study</button><button id="saved-view" aria-pressed="false">Saved</button><a href="./lab.html">SQL Lab</a></nav></div></header>
 <main>
 <section class="intro"><h1>Build your data skills</h1><p class="muted">Learn Python, SQL, and machine learning one short lesson at a time.</p></section>
 <section id="account" class="panel" aria-labelledby="account-title" hidden>
